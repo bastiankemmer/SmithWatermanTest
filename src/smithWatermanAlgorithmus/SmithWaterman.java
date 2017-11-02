@@ -8,21 +8,12 @@ package smithWatermanAlgorithmus;
 import gui.BackTrackException;
 import gui.EmptyAlignmentException;
 
-import java.util.List;
-
-
-import java.util.ArrayList;
-
 /**
  * Design Note: this class implements AminoAcids interface: a simple fix customized to amino acids, since that is all we deal with in this class
  * Supporting both DNA and Aminoacids, will require a more general design.
  */
 
 public class SmithWaterman {
-
-    private ArrayList<SimpleChaining.Match> matchList;
-
-    private final double scoreThreshold = 2.0;
 
     /**
      * The first input string
@@ -204,13 +195,6 @@ public class SmithWaterman {
     }
 
     /**
-     * Get the alignment score between the two input strings.
-     */
-    public double getAlignmentScore() {
-        return getMaxScore() / NORM_FACTOR;
-    }
-
-    /**
      * Output the local alignments ending in the (i, j) cell. aligned1 and
      * aligned2 are suffixes of final aligned strings found in backtracking
      * before calling this function. Note: the strings are replicated at each
@@ -242,41 +226,6 @@ public class SmithWaterman {
             throw new BackTrackException("");
         }
 
-    }
-
-    /**
-     * given the bottom right corner point trace back the top left conrner. at
-     * entry: i, j hold bottom right (end of Aligment coords) at return: hold
-     * top left (start of Alignment coords)
-     */
-    private int[] traceback(int i, int j) {
-
-        // find out which directions to backtrack
-        while (true) {
-            if ((prevCells[i][j] & DR_LEFT) > 0) {
-                if (score[i - 1][j] > 0)
-                    i--;
-                else
-                    break;
-            }
-            if ((prevCells[i][j] & DR_UP) > 0) {
-                // return traceback(i, j-1);
-                if (score[i][j - 1] > 0)
-                    j--;
-                else
-                    break;
-            }
-            if ((prevCells[i][j] & DR_DIAG) > 0) {
-                // return traceback(i-1, j-1);
-                if (score[i - 1][j - 1] > 0) {
-                    i--;
-                    j--;
-                } else
-                    break;
-            }
-        }
-        int[] m = {i, j};
-        return m;
     }
 
     /**
@@ -334,36 +283,4 @@ public class SmithWaterman {
         }
         return dpMatrix.toString();
     }
-
-    /**
-     * Return a set of Matches identified in Dynamic programming matrix. A match
-     * is a pair of subsequences whose score is higher than the preset
-     * scoreThreshold
-     **/
-    public List<SimpleChaining.Match> getMatches() {
-        //ArrayList<Match> matchList = new ArrayList<Match>();
-        int fA = 0, fB = 0;
-        // skip the first row and column, find the next maxScore after
-        // prevmaxScore
-        for (int i = 1; i <= length1; i++) {
-            for (int j = 1; j <= length2; j++) {
-                if (score[i][j] > scoreThreshold && score[i][j] > score[i - 1][j - 1] && score[i][j] > score[i - 1][j]
-                        && score[i][j] > score[i][j - 1]) {
-                    if (i == length1 || j == length2 || score[i][j] > score[i + 1][j + 1]) {
-                        // should be lesser than prev maxScore
-                        fA = i;
-                        fB = j;
-                        int[] f = traceback(fA, fB); // sets the x, y to
-                        // startAlignment
-                        // coordinates
-                        matchList.add(new SimpleChaining.Match(f[0], i, f[1], j, score[i][j] / NORM_FACTOR));
-                    }
-                }
-            }
-        }
-        return matchList; // could be empty if no HSP scores are >
-        // scoreThreshold
-    }
-
-
 }

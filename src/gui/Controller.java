@@ -14,7 +14,6 @@ public class Controller {
         this.view = view;
 
         view.getStart().setOnAction(new StartAlgEventHandler());
-
     }
 
     //Anzeigen GUI
