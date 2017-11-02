@@ -54,6 +54,7 @@ public class Controller {
 
                     view.getDpMatrix().setText(alignments + "\n\n" + dpMatrix);
                 } catch (EmptyAlignmentException | BackTrackException e1) {
+                    e1.printStackTrace();
                     view.Alarm(e1.getMessage());
                 }
             }
